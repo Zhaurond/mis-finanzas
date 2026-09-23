@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finanzas Personales COP | Control Financiero Real</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Chart.js for Reports -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-theme">
+  <!-- App Container -->
+  <div id="app" class="app-layout">
+    
+    <!-- Sidebar Navigation (Desktop) -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <div class="brand-icon">
+            <i class="fa-solid fa-wallet"></i>
+          </div>
+          <div class="brand-text">
+            <h2>Finanzas<span>COP</span></h2>
+            <span class="brand-tag">Control Real</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Summary Pill -->
+      <div class="available-summary-box">
+        <span class="label">
+          Disponible Real
+          <button class="help-icon-btn" onclick="showHelpModal('disponibilidad')" title="¿Qué es esto?">?</button>
+        </span>
+        <h3 id="sidebar-available-amount">$0</h3>
+        <div class="summary-sub" id="sidebar-available-subtitle">Descontados bolsillos y compromisos</div>
+      </div>
+
+      <!-- Nav Menu -->
+      <nav class="nav-menu">
+        <div class="nav-section">PRINCIPAL</div>
+        <button class="nav-btn active" data-view="dashboard">
+          <i class="fa-solid fa-chart-pie"></i> Dashboard
+        </button>
+        <button class="nav-btn" data-view="fixed-expenses">
+          <i class="fa-solid fa-file-invoice-dollar" style="color:#f87171;"></i> Gastos Fijos Mensuales
+        </button>
+        <button class="nav-btn" data-view="accounts">
+          <i class="fa-solid fa-building-columns"></i> Cuentas y Bancos
+        </button>
+        <button class="nav-btn" data-view="pockets">
+          <i class="fa-solid fa-piggy-bank"></i> Fondos y Ahorros
+        </button>
+
+        <div class="nav-section">GESTIÓN DE DINERO</div>
+        <button class="nav-btn" data-view="income">
+          <i class="fa-solid fa-arrow-down-long"></i> Ingresos
+        </button>
+        <button class="nav-btn" data-view="expenses">
+          <i class="fa-solid fa-arrow-up-long"></i> Gastos
+        </button>
+        <button class="nav-btn" data-view="credit-cards">
+          <i class="fa-solid fa-credit-card"></i> Tarjetas de Crédito
+        </button>
+        <button class="nav-btn" data-view="receivables">
+          <i class="fa-solid fa-hand-holding-dollar"></i> Por Cobrar (Terceros)
+        </button>
+
+        <div class="nav-section">PLANIFICACIÓN</div>
+        <button class="nav-btn" data-view="budgets">
+          <i class="fa-solid fa-calculator"></i> Presupuestos
+        </button>
+        <button class="nav-btn" data-view="goals">
+          <i class="fa-solid fa-bullseye"></i> Metas & Independencia
+        </button>
+        <button class="nav-btn" data-view="calendar">
+          <i class="fa-regular fa-calendar-days"></i> Calendario
+        </button>
+        <button class="nav-btn" data-view="cashflow">
+          <i class="fa-solid fa-timeline"></i> Flujo de Caja
+        </button>
+
+        <div class="nav-section">ANALÍTICA & REGLAS</div>
+        <button class="nav-btn" data-view="reports">
+          <i class="fa-solid fa-chart-line"></i> Reportes
+        </button>
+        <button class="nav-btn" data-view="rules">
+          <i class="fa-solid fa-shield-halved"></i> Reglas & Alertas
+        </button>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <button class="btn-wizard-trigger" id="btn-open-wizard-sidebar">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> <span>Asistente de Inicio</span>
+        </button>
+        <button id="btn-backup-data" class="btn-secondary-sm" title="Respaldar o Restaurar Datos">
+          <i class="fa-solid fa-database"></i> Backup / Datos
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Bar Header -->
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div class="page-title-container">
+            <h1 id="page-title">Dashboard Principal</h1>
+            <p id="page-subtitle">Resumen ejecutivo en tiempo real de tu liquidez</p>
+          </div>
+        </div>
+
+        <div class="top-bar-right">
+          <!-- Guided Wizard Button -->
+          <button class="btn-wizard-trigger" id="btn-open-wizard-top">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>Cómo Empezar</span>
+          </button>
+
+          <!-- Currency Indicator -->
+          <div class="currency-badge">
+            <span class="flag">🇨🇴</span> COP ($)
+          </div>
+
+          <!-- Quick Action Header Button -->
+          <button class="btn-primary-action" id="btn-open-quick-action">
+            <i class="fa-solid fa-plus"></i>
+            <span>Registrar Movimiento</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Alerts Container Banner -->
+      <div id="smart-alerts-container" class="smart-alerts-container"></div>
+
+      <!-- View Containers -->
+      <div class="content-body">
+        <!-- View 1: Dashboard -->
+        <section id="view-dashboard" class="view-panel active"></section>
+
+        <!-- View 2: Fixed Expenses (Pestaña nueva dedicada) -->
+        <section id="view-fixed-expenses" class="view-panel"></section>
+
+        <!-- View 3: Accounts -->
+        <section id="view-accounts" class="view-panel"></section>
+
+        <!-- View 4: Pockets (Apartados / Fondos) -->
+        <section id="view-pockets" class="view-panel"></section>
+
+        <!-- View 5: Income -->
+        <section id="view-income" class="view-panel"></section>
+
+        <!-- View 6: Expenses -->
+        <section id="view-expenses" class="view-panel"></section>
+
+        <!-- View 7: Credit Cards -->
+        <section id="view-credit-cards" class="view-panel"></section>
+
+        <!-- View 8: Receivables -->
+        <section id="view-receivables" class="view-panel"></section>
+
+        <!-- View 9: Budgets -->
+        <section id="view-budgets" class="view-panel"></section>
+
+        <!-- View 10: Goals & Independence -->
+        <section id="view-goals" class="view-panel"></section>
+
+        <!-- View 11: Financial Calendar -->
+        <section id="view-calendar" class="view-panel"></section>
+
+        <!-- View 12: Cash Flow -->
+        <section id="view-cashflow" class="view-panel"></section>
+
+        <!-- View 13: Reports -->
+        <section id="view-reports" class="view-panel"></section>
+
+        <!-- View 14: Rules & Alerts -->
+        <section id="view-rules" class="view-panel"></section>
+      </div>
+    </main>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="mobile-nav">
+      <button class="mobile-nav-btn active" data-view="dashboard">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Inicio</span>
+      </button>
+
+      <button class="mobile-nav-btn" data-view="fixed-expenses">
+        <i class="fa-solid fa-file-invoice-dollar"></i>
+        <span>Fijos</span>
+      </button>
+      
+      <!-- Floating Action Button in Center of Mobile Nav -->
+      <button class="mobile-fab" id="mobile-fab">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+
+      <button class="mobile-nav-btn" data-view="accounts">
+        <i class="fa-solid fa-building-columns"></i>
+        <span>Cuentas</span>
+      </button>
+      
+      <button class="mobile-nav-btn" data-view="pockets">
+        <i class="fa-solid fa-piggy-bank"></i>
+        <span>Fondos</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- Global Modal Container for Dynamic Modals -->
+  <div id="modal-backdrop" class="modal-backdrop">
+    <div id="modal-container" class="modal-container">
+      <!-- Dynamic Content Loaded by JS -->
+    </div>
+  </div>
+
+  <!-- Application Scripts -->
+  <script src="js/store.js"></script>
+  <script src="js/views/dashboard.js"></script>
+  <script src="js/views/fixedExpenses.js"></script>
+  <script src="js/views/accounts.js"></script>
+  <script src="js/views/pockets.js"></script>
+  <script src="js/views/income.js"></script>
+  <script src="js/views/expenses.js"></script>
+  <script src="js/views/creditCards.js"></script>
+  <script src="js/views/receivables.js"></script>
+  <script src="js/views/budgets.js"></script>
+  <script src="js/views/goals.js"></script>
+  <script src="js/views/calendar.js"></script>
+  <script src="js/views/cashflow.js"></script>
+  <script src="js/views/reports.js"></script>
+  <script src="js/views/rules.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
